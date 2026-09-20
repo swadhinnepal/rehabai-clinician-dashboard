@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#4b00ad" />
+    <meta name="description" content="RehabAI clinician dashboard prototype for reviewing patient pose-derived movement data and assigning exercises." />
+    <title>RehabAI Clinician Dashboard</title>
+    <link rel="stylesheet" href="./styles.css?v=9" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <button class="brand" data-route="patients" aria-label="RehabAI patients dashboard">
+          <span class="brand-mark" aria-hidden="true">R</span>
+          <span>Rehab<span>AI</span></span>
+          <small>CLINICIAN</small>
+        </button>
+        <nav class="side-nav" aria-label="Main navigation">
+          <button class="active" data-route="patients"><span aria-hidden="true">◫</span>Patients</button>
+          <button data-route="assignments"><span aria-hidden="true">✓</span>Assignments</button>
+          <button data-route="analytics"><span aria-hidden="true">⌁</span>Clinic analytics</button>
+        </nav>
+        <div class="sidebar-bottom">
+          <button id="helpButton"><span aria-hidden="true">?</span>Help & support</button>
+          <div class="clinician-card">
+            <span class="clinician-avatar">AP</span>
+            <div><strong>Dr. A. Patel</strong><small>Physical Therapist</small></div>
+            <button id="profileMenu" aria-label="Open profile menu">•••</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <button class="menu-button" id="menuButton" aria-label="Open navigation">☰</button>
+          <div class="clinic-name"><span class="status-dot"></span>Northlake Rehabilitation</div>
+          <div class="top-actions">
+            <button class="icon-button" id="notificationButton" aria-label="Notifications">♢<span class="notification-dot"></span></button>
+            <button class="avatar-button" id="avatarButton" aria-label="Clinician profile">AP</button>
+          </div>
+        </header>
+
+        <main>
+          <section class="view active" id="patientsView" aria-labelledby="patientsTitle">
+            <div class="page-header">
+              <div>
+                <p class="eyebrow">Patient monitoring</p>
+                <h1 id="patientsTitle">Your patients</h1>
+                <p class="page-subtitle">Review movement trends and follow up where the data needs your attention.</p>
+              </div>
+              <button class="primary-button" id="addPatientButton"><span aria-hidden="true">＋</span>Add patient</button>
+            </div>
+
+            <section class="workflow-banner" aria-labelledby="workflowTitle">
+              <div class="workflow-copy">
+                <p class="eyebrow">Start here</p>
+                <h2 id="workflowTitle">Review patients who need your attention</h2>
+                <p>Open a patient, check their flagged pose observations, then update the care plan if needed.</p>
+              </div>
+              <ol class="workflow-steps">
+                <li><span>1</span><div><strong>Choose a patient</strong><small>Start with “Needs review.”</small></div></li>
+                <li><span>2</span><div><strong>Review movement data</strong><small>Check sessions and pose flags.</small></div></li>
+                <li><span>3</span><div><strong>Take action</strong><small>Assign an exercise or send a message.</small></div></li>
+              </ol>
+              <button class="workflow-button" id="reviewFlaggedButton">Review 4 flagged patients <span>→</span></button>
+            </section>
+
+            <div class="summary-grid">
+              <article class="summary-card featured"><div><span class="summary-icon">◫</span><span class="trend-chip">+2 this month</span></div><strong>24</strong><p>Active patients</p></article>
+              <article class="summary-card"><div><span class="summary-icon purple">✓</span><span class="trend-up">↑ 6%</span></div><strong>82%</strong><p>Average adherence</p></article>
+              <article class="summary-card"><div><span class="summary-icon amber">!</span><span class="needs-action">Needs review</span></div><strong>4</strong><p>Flagged reports</p></article>
+              <article class="summary-card"><div><span class="summary-icon blue">⌁</span><span class="trend-up">↑ 4.8%</span></div><strong>78%</strong><p>Average movement score</p></article>
+            </div>
+
+            <section class="panel patient-panel">
+              <div class="panel-toolbar">
+                <div class="search-wrap"><span aria-hidden="true">⌕</span><input id="patientSearch" type="search" placeholder="Search patients" aria-label="Search patients" /></div>
+                <div class="filter-tabs" role="tablist" aria-label="Patient status">
+                  <button class="active" data-filter="all" role="tab">All <span>6</span></button>
+                  <button data-filter="review" role="tab">Needs review <span>4</span></button>
+                  <button data-filter="ontrack" role="tab">On track <span>2</span></button>
+                </div>
+                <button class="filter-button" id="filterButton"><span aria-hidden="true">≡</span>Filter</button>
+              </div>
+              <div class="patient-table" role="table" aria-label="Patient list">
+                <div class="table-header" role="row"><span role="columnheader">Patient</span><span role="columnheader">Care plan</span><span role="columnheader">Last session</span><span role="columnheader">Adherence</span><span role="columnheader">Status</span><span></span></div>
+                <div id="patientRows"></div>
+              </div>
+              <div class="empty-state" id="emptyState" hidden><span>⌕</span><h2>No patients found</h2><p>Try a different name or status filter.</p></div>
+            </section>
+          </section>
+
+          <section class="view" id="assignmentsView" aria-labelledby="assignmentsTitle">
+            <div class="page-header"><div><p class="eyebrow">Care plans</p><h1 id="assignmentsTitle">Assignments</h1><p class="page-subtitle">See what is assigned, due, completed, or overdue across your patients.</p></div><button class="primary-button" id="newAssignmentButton">＋ New assignment</button></div>
+            <div class="summary-grid compact-summary"><article class="summary-card featured"><div><span class="summary-icon">✓</span><span class="trend-chip">Today</span></div><strong>18</strong><p>Sessions due</p></article><article class="summary-card"><div><span class="summary-icon purple">↗</span><span class="trend-up">84%</span></div><strong>15</strong><p>Completed</p></article><article class="summary-card"><div><span class="summary-icon amber">!</span><span class="needs-action">Follow up</span></div><strong>3</strong><p>Overdue</p></article></div>
+            <section class="panel assignment-board"><div class="panel-toolbar"><div class="search-wrap"><span>⌕</span><input id="assignmentSearch" type="search" placeholder="Search patient or exercise" aria-label="Search assignments" /></div><div class="filter-tabs"><button class="active" data-assignment-filter="all">All</button><button data-assignment-filter="due">Due today</button><button data-assignment-filter="overdue">Overdue</button></div></div><div id="assignmentRows" class="assignment-rows"></div></section>
+          </section>
+
+          <section class="view" id="analyticsView" aria-labelledby="analyticsTitle">
+            <div class="page-header"><div><p class="eyebrow">Clinic overview</p><h1 id="analyticsTitle">Clinic analytics</h1><p class="page-subtitle">Aggregate trends from the fictional patients in this dashboard.</p></div><button class="range-button analytics-range" id="analyticsRange">Last 30 days⌄</button></div>
+            <div class="summary-grid"><article class="summary-card featured"><div><span class="summary-icon">⌁</span><span class="trend-chip">↑ 4.8%</span></div><strong>78</strong><p>Movement score</p></article><article class="summary-card"><div><span class="summary-icon purple">✓</span><span class="trend-up">↑ 6%</span></div><strong>82%</strong><p>Plan adherence</p></article><article class="summary-card"><div><span class="summary-icon blue">◫</span><span class="trend-up">+2</span></div><strong>24</strong><p>Active patients</p></article><article class="summary-card"><div><span class="summary-icon amber">!</span><span class="needs-action">−2 from prior</span></div><strong>4</strong><p>Patients needing review</p></article></div>
+            <div class="analytics-grid"><section class="panel analytics-card"><div class="panel-title"><div><p class="eyebrow">Movement quality</p><h2>Average score by week</h2></div><span class="quality-chip"><i></i>Improving</span></div><div class="bar-chart" aria-label="Movement quality increased over six weeks"><span style="height:44%"><b>68</b><small>W1</small></span><span style="height:53%"><b>71</b><small>W2</small></span><span style="height:61%"><b>74</b><small>W3</small></span><span style="height:67%"><b>76</b><small>W4</small></span><span style="height:75%"><b>78</b><small>W5</small></span><span style="height:82%"><b>81</b><small>W6</small></span></div></section><section class="panel analytics-card"><div class="panel-title"><div><p class="eyebrow">Attention needed</p><h2>Review queue</h2></div></div><div class="review-list"><button data-patient="PT-1044"><span class="status-badge review">Daniel Kim</span><b>58% adherence</b><small>Movement score fell 6%</small></button><button data-patient="PT-1031"><span class="status-badge review">Marcus Williams</span><b>3 flagged sessions</b><small>Shoulder ROM below target</small></button><button data-patient="PT-1056"><span class="status-badge review">Noah Thompson</span><b>64% adherence</b><small>Two missed sessions</small></button></div></section></div>
+          </section>
+
+          <section class="view" id="detailView" aria-labelledby="patientName">
+            <button class="back-button" id="backButton"><span aria-hidden="true">←</span>Back to patients</button>
+            <div class="patient-heading">
+              <div class="patient-identity">
+                <div class="patient-avatar large" id="detailPatientAvatar" aria-hidden="true">MC</div>
+                <div><div class="name-line"><h1 id="patientName">Maya Chen</h1><span class="status-badge ontrack" id="patientStatus">On track</span></div><p id="patientMeta">ACL reconstruction · Right knee · Week 8 of 16</p><div class="patient-tags"><span id="patientId">PT-1048</span><span>Last updated <b id="lastUpdated">Today, 9:42 AM</b></span></div></div>
+              </div>
+              <div class="heading-actions"><button class="secondary-button" id="messageButton">Message patient</button><button class="primary-button" id="assignButton"><span aria-hidden="true">＋</span>Assign exercise</button></div>
+            </div>
+
+            <section class="next-step-card" aria-labelledby="nextStepTitle">
+              <div class="next-step-number">1</div>
+              <div><p class="eyebrow">Recommended next step</p><h2 id="nextStepTitle">Review exercise-level findings</h2><p id="nextStepCopy">Open an assigned exercise tab to see its pose measurements, flags, and session history.</p></div>
+              <div class="next-step-actions"><button class="secondary-button" id="reviewLatestButton">Review exercises</button><button class="primary-button" id="quickAssignButton">Assign exercise</button></div>
+            </section>
+
+            <div class="report-controls">
+              <div class="detail-tabs" id="detailTabs" role="tablist" aria-label="Patient report and assigned exercises"></div>
+              <button class="range-button" id="rangeButton">Last 30 days⌄</button>
+            </div>
+
+            <div class="report-grid" id="overviewReport">
+              <div class="report-main">
+                <section class="metric-grid" id="metricGrid"></section>
+                <section class="panel chart-panel">
+                  <div class="panel-title"><div><p class="eyebrow">Overall trend</p><h2>Movement score across all sessions</h2></div><div class="legend"><span class="legend-purple"></span>Score <span class="legend-dash"></span>Target</div></div>
+                  <svg class="trend-chart" viewBox="0 0 760 260" role="img" aria-label="Overall movement score trend across all assigned exercises">
+                    <g class="chart-grid"><line x1="54" y1="38" x2="735" y2="38"/><line x1="54" y1="92" x2="735" y2="92"/><line x1="54" y1="146" x2="735" y2="146"/><line x1="54" y1="200" x2="735" y2="200"/></g>
+                    <g class="y-labels"><text x="12" y="42">100</text><text x="20" y="96">80</text><text x="20" y="150">60</text><text x="20" y="204">40</text></g>
+                    <line class="target-line" x1="54" y1="92" x2="735" y2="92"/>
+                    <path class="area-fill" d="M58 177 C120 170,140 157,193 160 S280 132,332 139 S420 111,470 118 S555 87,605 94 S680 68,730 72 L730 218 L58 218 Z"/>
+                    <path class="score-line" d="M58 177 C120 170,140 157,193 160 S280 132,332 139 S420 111,470 118 S555 87,605 94 S680 68,730 72"/>
+                    <g class="score-dots"><circle cx="58" cy="177" r="6"/><circle cx="193" cy="160" r="6"/><circle cx="332" cy="139" r="6"/><circle cx="470" cy="118" r="6"/><circle cx="605" cy="94" r="6"/><circle cx="730" cy="72" r="6"/></g>
+                    <g class="x-labels"><text x="48" y="246">Aug 22</text><text x="180" y="246">Aug 28</text><text x="318" y="246">Sep 3</text><text x="456" y="246">Sep 9</text><text x="590" y="246">Sep 15</text><text x="708" y="246">Today</text></g>
+                  </svg>
+                </section>
+
+                <section class="panel overview-summary-panel">
+                  <div class="panel-title"><div><p class="eyebrow">Care plan summary</p><h2>General patient progress</h2></div><span class="quality-chip"><i></i>Updated today</span></div>
+                  <div class="overview-summary-grid" id="overviewSummary"></div>
+                </section>
+              </div>
+
+              <aside class="report-side">
+                <section class="panel overview-status-panel">
+                  <div class="panel-title"><div><p class="eyebrow">Overall status</p><h2 id="overviewStatusTitle">Progressing as expected</h2></div><span class="status-badge ontrack" id="overviewStatusBadge">On track</span></div>
+                  <p id="overviewStatusCopy">The patient is completing the plan consistently. Open an exercise tab for pose measurements and form details.</p>
+                  <div class="overview-checklist" id="overviewChecklist"></div>
+                  <button class="primary-button" id="openFirstExercise">Open first exercise</button>
+                </section>
+                <section class="panel plan-panel"><div class="panel-title"><div><p class="eyebrow">Active plan</p><h2 id="planCount">3 exercises</h2></div><button class="text-button" id="editPlanButton">Edit</button></div><div id="activePlan"></div></section>
+              </aside>
+            </div>
+            <div id="detailTabContent" hidden></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="utilityModal" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="utilityTitle">
+        <div class="modal-header"><div><p class="eyebrow" id="utilityEyebrow">Dashboard</p><h2 id="utilityTitle">Details</h2></div><button id="closeUtility" aria-label="Close">×</button></div>
+        <div id="utilityBody"></div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="assignmentModal" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="assignTitle">
+        <div class="modal-header"><div><p class="eyebrow">Care plan</p><h2 id="assignTitle">Assign an exercise</h2></div><button id="closeModal" aria-label="Close">×</button></div>
+        <form id="assignmentForm">
+          <label>Patient<select id="assignmentPatientSelect" aria-label="Choose patient"></select></label>
+          <label>Exercise<select id="exerciseSelect" aria-label="Choose from the RehabAI exercise library"></select></label>
+          <div class="exercise-preview" aria-live="polite"><img id="exercisePreviewImage" src="./assets/bodyweight-squat.png" alt="Bodyweight Squat demonstration" /><div><strong id="exercisePreviewName">Bodyweight Squat</strong><small>Patient-facing exercise demonstration</small></div></div>
+          <div class="form-grid"><label>Sets<input id="setsInput" type="number" min="1" max="10" value="3" /></label><label>Repetitions<input id="repsInput" type="number" min="1" max="100" value="12" /></label></div>
+          <label>Schedule<select id="scheduleSelect"><option>3 days per week</option><option>Daily</option><option>Every other day</option><option>2 days per week</option></select></label>
+          <label>Clinician cue<textarea id="cueInput" rows="3" placeholder="Add a short form cue for the patient">Keep the right knee tracking over the second toe.</textarea></label>
+          <div class="modal-note"><span>ⓘ</span>This prototype saves assignments only in this demo view.</div>
+          <div class="modal-actions"><button type="button" class="secondary-button" id="cancelAssign">Cancel</button><button class="primary-button" type="submit">Assign exercise</button></div>
+        </form>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js?v=9"></script>
+  </body>
+</html>
